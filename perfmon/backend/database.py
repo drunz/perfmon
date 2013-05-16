@@ -3,10 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, BigInteger, Integer, String, DateTime, Float, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
-from perfmon.settings import DBCONF
+import perfmon.settings as cfg
 
 
-engine = create_engine('postgresql+psycopg2://%(user)s:%(password)s@%(host)s/%(name)s' % DBCONF)
+engine = create_engine('postgresql+psycopg2://%(user)s:%(password)s@%(host)s/%(name)s' % cfg.get("database"))
 Session = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base()
 

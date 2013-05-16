@@ -1,15 +1,15 @@
 # chkconfig: 345 66 34
-# Description: AAM Performance Monitor
-# processname: perfmond
+# Description: AAM TMS 2 Server
+# processname: etmsd
 #
-# Author:     Dennis Runz (dennis.runz@artsalliancemedia.com)
+# Author:     Roderick Groeneveld (roderick.groeneveld@artsalliancemedia.com)
 #
 
 set -e
 
-BIN="[p]erfmon.py"
+BIN="[p]erfmond.py"
 PID_FILE='/usr/share/perfmon.pid'
-CONF_FILE='/usr/share/perfmon.cfg'
+CONF_FILE='/usr/share/perfmon.conf'
 
 case "$1" in
   start)
@@ -17,7 +17,7 @@ case "$1" in
                 set +e
         ps ax | grep $BIN > /dev/null
         if [ $? == 1 ]; then
-                        set -e
+                set -e
                 # Perfmon.py isn't runnning, so deleting PID will clean up any problems preventing startup
                 rm -f $PID_FILE;
         else
@@ -28,7 +28,7 @@ case "$1" in
         fi
     fi
     echo "Starting Perfmon:"
-    /usr/bin/perfmon.py start --config $CONF_FILE
+    /usr/bin/perfmond.py --config $CONF_FILE
     ;;
   stop)
         set +e
@@ -40,7 +40,7 @@ case "$1" in
         else
                 set -e
                 echo "Stopping Perfmon:"
-            /usr/bin/perfmon.py stop --config $CONF_FILE
+            /usr/bin/perfmond.py --config $CONF_FILE
         fi
     ;;
   status)

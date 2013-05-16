@@ -1,6 +1,7 @@
 import os
+import ujson
 import cherrypy
-from perfmon.settings import PROJECT_ROOT, STATIC_ROOT
+import perfmon.settings as cfg
 #from cherrypy import wsgiserver
 
 
@@ -17,29 +18,33 @@ def command_line_handler():
     return options, args
 
 
+def init():
+    options, args = command_line_handler()
+    configfile = options.config_file or os.path.join(cfg.PROJECT_ROOT, 'perfmon.conf')
+    cfg.load_config(configfile)
+
+
 def main():
     from perfmon.backend import endpoints
     from perfmon.backend import database as db
     from perfmon.dashboard.views import Dashboard
 
-    options, args = command_line_handler()
-
-    basedir = os.path.join(PROJECT_ROOT, 'postgres')
-    db.install_postgres_extensions(basedir)
+    postgresdir = os.path.join(cfg.PROJECT_ROOT, 'postgres')
+    db.install_postgres_extensions(postgresdir)
     
     root = Dashboard()
     root.query = endpoints.Query()
     root.log = endpoints.Logging()
 
-    config = {
+    cpconfig = {
         'global': {
-            'tools.staticdir.debug': True,
-            'log.screen': True,
-            'server.socket_host': '0.0.0.0',
-            'server.socket_port': 9999,
+            'tools.staticdir.debug': False,
+            'log.screen': False,
+            'server.socket_host': str(cfg.get("service", "host")),
+            'server.socket_port': cfg.get("service", "port"),
         },
         '/static': {
-            'tools.staticdir.root': STATIC_ROOT,
+            'tools.staticdir.root': cfg.STATIC_ROOT,
         },
         '/static/css': {
             'tools.staticdir.on':   True,
@@ -67,7 +72,7 @@ def main():
         },
     }
 
-    cherrypy.quickstart(root, config=config)
+    cherrypy.quickstart(root, config=cpconfig)
 
     
     # if options.config_file:
@@ -81,4 +86,5 @@ def main():
 
 
 if __name__ == '__main__':
+    init()
     main()
