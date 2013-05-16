@@ -28,7 +28,7 @@ case "$1" in
         fi
     fi
     echo "Starting Perfmon:"
-    /usr/bin/perfmond.py --config $CONF_FILE
+    /usr/bin/perfmond.py --config $CONF_FILE start
     ;;
   stop)
         set +e
@@ -40,7 +40,7 @@ case "$1" in
         else
                 set -e
                 echo "Stopping Perfmon:"
-            /usr/bin/perfmond.py --config $CONF_FILE
+                /usr/bin/perfmond.py --config $CONF_FILE stop
         fi
     ;;
   status)

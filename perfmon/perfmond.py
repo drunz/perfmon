@@ -2,7 +2,7 @@ import os
 import ujson
 import cherrypy
 import perfmon.settings as cfg
-#from cherrypy import wsgiserver
+import perfmon.yapdi as yapdi
 
 
 def command_line_handler():
@@ -18,19 +18,15 @@ def command_line_handler():
     return options, args
 
 
-def init():
-    options, args = command_line_handler()
+def init(options, args):
     configfile = options.config_file or os.path.join(cfg.PROJECT_ROOT, 'perfmon.conf')
-    cfg.load_config(configfile)
+    cfg.load_config(configfile)    
 
 
-def main():
+def main(options, args):
     from perfmon.backend import endpoints
     from perfmon.backend import database as db
     from perfmon.dashboard.views import Dashboard
-
-    postgresdir = os.path.join(cfg.PROJECT_ROOT, 'postgres')
-    db.install_postgres_extensions(postgresdir)
     
     root = Dashboard()
     root.query = endpoints.Query()
@@ -72,19 +68,29 @@ def main():
         },
     }
 
-    cherrypy.quickstart(root, config=cpconfig)
+    PIDFILE = '/usr/share/perfmon.pid'
+    daemon = yapdi.Daemon(pidfile=PIDFILE)
 
-    
-    # if options.config_file:
-    #   print "Using settings: %s" % options.config_file
-    #   cherrypy.quickstart(root, config=options.config_file)
-    # else:
-    #   cherrypy.quickstart(root, config=config)
-    
-    # server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 9090), root, config=os.path.join(PROJECT_ROOT, 'settings.conf'))
-    # server.start()
+    if 'start' in args:
+        postgresdir = os.path.join(cfg.PROJECT_ROOT, 'postgres')
+        db.install_postgres_extensions(postgresdir)
+
+        daemon.daemonize()
+        cherrypy.quickstart(root, config=cpconfig)
+    elif 'stop' in args:
+        daemon.kill()
+    elif 'console' in args:
+        cpconfig['global']['tools.staticdir.debug'] = True
+        cpconfig['global']['log.screen'] = True
+        cherrypy.quickstart(root, config=cpconfig)
+    elif 'status' in args:
+        if daemon.status():
+            print "Perfmon is RUNNING"
+        else:
+            print "Perfmon is NOT running"
 
 
 if __name__ == '__main__':
-    init()
-    main()
+    options, args = command_line_handler()
+    init(options, args)
+    main(options, args)

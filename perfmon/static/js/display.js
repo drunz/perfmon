@@ -37,7 +37,7 @@ cal_response.init({
     cellsize: 10,
     cellpadding: 1,
     domainGutter: 2,
-    scale: [0.1, 1, 10, 100],    // Custom threshold for the scale
+    scale: [1, 10, 100, 1000],    // Custom threshold for the scale
     itemName : ["second", "seconds"],
 });
 
