@@ -75,14 +75,23 @@ def main(options, args):
         postgresdir = os.path.join(cfg.PROJECT_ROOT, 'postgres')
         db.install_postgres_extensions(postgresdir)
 
+        print "Starting ..."
         daemon.daemonize()
         cherrypy.quickstart(root, config=cpconfig)
+
     elif 'stop' in args:
+        print "Stopping ..."
         daemon.kill()
+
+    elif 'restart' in args:
+        print "Restarting ..."
+        daemon.restart()
+
     elif 'console' in args:
         cpconfig['global']['tools.staticdir.debug'] = True
         cpconfig['global']['log.screen'] = True
         cherrypy.quickstart(root, config=cpconfig)
+
     elif 'status' in args:
         if daemon.status():
             print "Perfmon is RUNNING"
