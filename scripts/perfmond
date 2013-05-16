@@ -1,0 +1,64 @@
+# chkconfig: 345 66 34
+# Description: AAM Performance Monitor
+# processname: perfmond
+#
+# Author:     Dennis Runz (dennis.runz@artsalliancemedia.com)
+#
+
+set -e
+
+BIN="[p]erfmon.py"
+PID_FILE='/usr/share/perfmon.pid'
+CONF_FILE='/usr/share/perfmon.cfg'
+
+case "$1" in
+  start)
+    if [ -e $PID_FILE ]; then
+                set +e
+        ps ax | grep $BIN > /dev/null
+        if [ $? == 1 ]; then
+                        set -e
+                # Perfmon.py isn't runnning, so deleting PID will clean up any problems preventing startup
+                rm -f $PID_FILE;
+        else
+                set -e
+                # but if it is, we do not delete it and we do not try to start it twice
+                echo "Perfmon is already running - cannot start until first instance is stopped."
+                exit 0
+        fi
+    fi
+    echo "Starting Perfmon:"
+    /usr/bin/perfmon.py start --config $CONF_FILE
+    ;;
+  stop)
+        set +e
+        ps ax | grep $BIN > /dev/null
+        if [ $? == 1 ]; then
+                set -e
+                echo "Perfmon is not running."
+                exit 0
+        else
+                set -e
+                echo "Stopping Perfmon:"
+            /usr/bin/perfmon.py stop --config $CONF_FILE
+        fi
+    ;;
+  status)
+        set +e
+        ps ax | grep $BIN > /dev/null
+        if [ $? == 1 ]; then
+                        set -e
+            echo "Perfmon is STOPPED"
+            exit 3
+        else
+                set -e
+            echo "Perfmon is RUNNING"
+        fi
+  ;;
+  *)
+    echo "Usage: /etc/init.d/perfmond {start|stop|status}"
+    exit 1
+esac
+
+exit 0
+
