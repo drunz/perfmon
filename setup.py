@@ -37,7 +37,7 @@ setup(
     packages = find_packages(''),
     package_data = {
         # If any package contains *.txt or *.rst files, include them:
-        'perfmon': find_extra_files('perfmon', ['.hbs', '.html', '.js', '.css', '.jpg', '.png', '.gif', '.sql', '.conf', '.csv'], [])
+        'perfmon': find_extra_files('perfmon', ['.hbs', '.html', '.js', '.css', '.jpg', '.png', '.gif', '.sql', '.conf', '.csv', '.eot', '.woff', '.ttf', '.svg'], [])
     },
     install_requires = ['psycopg2', 'cherrypy==3.2.2'],
     scripts = ['perfmon/perfmond.py'],
