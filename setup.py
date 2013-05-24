@@ -30,7 +30,7 @@ def find_extra_files(dir, patterns,ignore_us):
 setup(
     name = "perfmon",
     description = "Performance monitoring service for AAM Producer",
-    version = "0.5",
+    version = "0.6",
     author = 'Arts Alliance Media',
     author_email='development@artsalliancemedia.com',
     url='http://www.artsalliancemedia.com',

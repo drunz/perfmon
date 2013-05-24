@@ -1,5 +1,5 @@
 import os
-import ujson
+import json
 
 PROJECT_ROOT  = os.path.abspath(os.path.dirname(__file__))
 STATIC_ROOT   = os.path.join(PROJECT_ROOT, 'static')
@@ -26,7 +26,7 @@ CONFIG = None
 def load_config(filename):
     global CONFIG
     if not CONFIG:
-        cfg = ujson.loads(open(filename).read() or '{}')
+        cfg = json.loads(open(filename).read() or '{}')
         if cfg:
             CONFIG = cfg
 

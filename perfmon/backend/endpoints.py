@@ -242,8 +242,8 @@ class Dateseries(object):
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def response(self, endpoint=None, complex_id=None):
-        hrs24 = datetime.now() - timedelta(hours=24)
-        result = db.Session.query(db.Request.timestamp, db.Request.timerequest).filter(db.Request.timestamp >= hrs24).all()
+        startdt = datetime.now() - timedelta(days=13)
+        result = db.Session.query(db.Request.timestamp, db.Request.timerequest).filter(db.Request.timestamp >= startdt).all()
         
         result_dict = dict((int(time.mktime(row[0].timetuple())), row[1]) for row in result)
         return result_dict
@@ -251,11 +251,11 @@ class Dateseries(object):
     @cherrypy.tools.json_out()
     @cherrypy.expose
     def throughput(self, tptype, endpoint=None, complex_id=None):
-        hrs24 = datetime.now() - timedelta(hours=24)
+        startdt = datetime.now() - timedelta(days=13)
         if tptype == 'upstream':
-            result = db.Session.query(db.Request.timestamp, db.Request.bytessent).filter(db.Request.timestamp >= hrs24).all()
+            result = db.Session.query(db.Request.timestamp, db.Request.bytessent).filter(db.Request.timestamp >= startdt).all()
         elif tptype == 'downstream':
-            result = db.Session.query(db.Request.timestamp, db.Request.bytesreceived).filter(db.Request.timestamp >= hrs24).all()
+            result = db.Session.query(db.Request.timestamp, db.Request.bytesreceived).filter(db.Request.timestamp >= startdt).all()
         else:
             raise cherrypy.HTTPError(404)
         

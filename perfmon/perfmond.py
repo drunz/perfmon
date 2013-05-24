@@ -1,5 +1,4 @@
 import os
-import ujson
 import cherrypy
 import perfmon.settings as cfg
 import perfmon.yapdi as yapdi
